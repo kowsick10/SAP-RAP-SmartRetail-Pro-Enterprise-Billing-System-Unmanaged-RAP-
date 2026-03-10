@@ -1,0 +1,53 @@
+@Metadata.layer: #CORE
+@UI.headerInfo: { 
+  typeName: 'Bill', 
+  typeNamePlural: 'Bills', 
+  title: { type: #STANDARD, value: 'BillID' },
+  description: { type: #STANDARD, value: 'CustomerName' } 
+}
+annotate view ZC_RAP_BILLHEADER083 with {
+  @UI.facet: [
+    { id: 'HeaderData', type: #COLLECTION, label: 'Bill Summary', position: 10 },
+    { id: 'IdentificationData', parentId: 'HeaderData', type: #IDENTIFICATION_REFERENCE, label: 'General Information', position: 10 },
+    { id: 'Items', type: #LINEITEM_REFERENCE, label: 'Products', position: 20, targetElement: '_Items' }
+  ]
+
+  @UI.lineItem: [
+    { position: 10, label: 'Bill ID' },
+    { type: #FOR_ACTION, dataAction: 'MarkAsPaid', label: 'Mark Paid' },
+    { type: #FOR_ACTION, dataAction: 'GenerateInvoice', label: 'Download PDF' }
+  ]
+  @UI.identification: [
+    { position: 10, label: 'Bill ID' },
+    { type: #FOR_ACTION, dataAction: 'MarkAsPaid', label: 'Mark Paid' },
+    { type: #FOR_ACTION, dataAction: 'GenerateInvoice', label: 'Download PDF' }
+  ]
+  @UI.selectionField: [{ position: 10 }]
+  BillID;
+
+  @UI.lineItem: [{ position: 20, label: 'Customer Name' }]
+  @UI.identification: [{ position: 20, label: 'Customer Name' }]
+  @UI.selectionField: [{ position: 20 }]
+  CustomerName;
+
+  @UI.lineItem: [{ position: 30, label: 'Billing Date' }]
+  @UI.identification: [{ position: 30, label: 'Billing Date' }]
+  BillingDate;
+
+  @UI.lineItem: [{ position: 40, label: 'Total Amount' }]
+  @UI.identification: [{ position: 40, label: 'Total Amount' }]
+  TotalAmount;
+
+  @UI.lineItem: [{ position: 60, criticality: 'StatusCriticality', label: 'Status' }]
+  @UI.identification: [{ position: 60, criticality: 'StatusCriticality', label: 'Status' }]
+  PaymentStatus;
+
+  @UI.hidden: true
+  StatusCriticality;
+  
+  @UI.hidden: true
+  LastChangedAt;
+  
+  @UI.hidden: true
+  Currency;
+}

@@ -1,0 +1,32 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_RAP_BILLHEADER083 alias BillHeader
+{
+  use create;
+  use update;
+  use delete;
+
+  /* Expose your Custom Actions to the Fiori UI */
+  use action MarkAsPaid;
+  use action GenerateInvoice;
+
+  /* Expose the Standard Draft Actions to the Fiori UI */
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  /* Navigate to the items */
+  use association _Items { create; with draft; }
+}
+
+define behavior for ZC_RAP_BILLITEM083 alias BillItem
+{
+  use update;
+  use delete;
+
+  use association _Header { with draft; }
+}

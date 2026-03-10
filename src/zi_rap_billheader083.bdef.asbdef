@@ -1,0 +1,87 @@
+unmanaged implementation in class zbp_i_rap_billheader083 unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_RAP_BILLHEADER083 alias BillHeader
+draft table zrap_bhdr083_d
+lock master total etag LastChangedAt
+authorization master ( global )
+etag master LastChangedAt
+early numbering
+{
+  create;
+  update;
+  delete;
+
+  association _Items { create; with draft; }
+
+  field ( readonly ) BillID, TotalAmount;
+  field ( mandatory ) CustomerName, BillingDate;
+
+  // Custom Actions
+  action MarkAsPaid result [1] $self;
+  action GenerateInvoice result [1] $self;
+
+  // Side Effects for UI responsiveness
+  side effects { action MarkAsPaid affects field PaymentStatus; }
+
+  // Draft Actions
+  draft action Edit;
+  draft action Resume;
+  draft action Activate optimized;
+  draft action Discard;
+  draft determine action Prepare { }
+
+  mapping for zrap_bill_hdr083
+  {
+    BillID = bill_id;
+    CustomerName = customer_name;
+    BillingDate = billing_date;
+    TotalAmount = total_amount;
+    Currency = currency;
+    PaymentStatus = payment_status;
+    InvoiceFile = invoice_file;
+    MimeType = mimetype;
+    FileName = filename;
+    LastChangedAt = last_changed_at;
+  }
+}
+
+// Linked to the separate Item Logic Handler class
+define behavior for ZI_RAP_BILLITEM083 alias BillItem
+implementation in class zbp_i_rap_billitem083 unique
+draft table zrap_bitm083_d
+lock dependent by _Header
+authorization dependent by _Header
+etag master LastChangedAt
+{
+  update;
+  delete;
+
+  field ( readonly ) BillID, Subtotal;
+  field ( mandatory ) ProductID, Quantity, UnitPrice;
+  association _Header { with draft; }
+
+  // Automated Math Logic
+  determination CalcSubtotal on modify { field Quantity, UnitPrice; }
+  determination CalcTotalAmount on modify { field Subtotal; }
+
+  // Side Effects to update Header Total in real-time on UI
+  side effects {
+    field Quantity affects field Subtotal, entity _Header;
+    field UnitPrice affects field Subtotal, entity _Header;
+  }
+
+  mapping for zrap_bill_itm083
+  {
+    BillID = bill_id;
+    ItemPosition = item_pos;
+    ProductID = product_id;
+    ProductName = product_name;
+    Quantity = quantity;
+    UnitPrice = unit_price;
+    Subtotal = subtotal;
+    Currency = currency;
+    LastChangedAt = last_changed_at;
+  }
+}

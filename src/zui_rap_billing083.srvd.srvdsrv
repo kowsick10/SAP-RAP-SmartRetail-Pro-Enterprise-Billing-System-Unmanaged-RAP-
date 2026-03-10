@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service Definition for Billing 083'
+define service ZUI_RAP_BILLING083 {
+  expose ZC_RAP_BILLHEADER083 as BillHeader;
+  expose ZC_RAP_BILLITEM083 as BillItem;
+}
